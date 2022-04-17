@@ -3,32 +3,33 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LEN 200
+#define MAX_LEN 64
 
 int fileToSize(char filename[]){
     char line[MAX_LEN], text[MAX_LEN][MAX_LEN];
     char* token;
 
-    // Membaca file
     FILE* myfile = fopen(filename, "r");
 
-    // Output apabila file kosong
-    if(myfile == NULL){
-      printf("Error : file tidak ada");   
-      exit(1);             
-   }
-
-   int i = 0;
+    int i = 0;
     while(fgets(line, MAX_LEN, myfile)) {
         token = strtok(line, "\n");        
         strcpy(text[i], token);
         ++i;
     }
 
-    // Menutup file
     fclose(myfile);
 	
 	return atoi(text[0]);
+}
+
+void isFileValid(char filename[]){
+    FILE* myfile = fopen(filename, "r");
+
+    if(myfile == NULL){
+      printf("Error: file invalid!");   
+      exit(1);             
+    }
 }
 
 void printFile(char filename[]){
@@ -36,7 +37,6 @@ void printFile(char filename[]){
     char line[MAX_LEN], text[MAX_LEN][MAX_LEN];
     char* token;
 
-    // Membaca file
     FILE* myfile = fopen(filename, "r");
 
     while(fgets(line, MAX_LEN, myfile)) {
@@ -44,25 +44,16 @@ void printFile(char filename[]){
         printf("%s\n", token);
         ++i;
     }
-    // Menutup file
+    
     fclose(myfile);
 }
 
 void fileToArr(int size, char filename[], int arr[size][size]){
-	
-    // Kamus
     int i=0, j;
     char line[MAX_LEN], text[MAX_LEN][MAX_LEN];
     char* token;
 
-    // Membaca file
     FILE* myfile = fopen(filename, "r");
-
-    // Output apabila file kosong
-    if(myfile == NULL){
-      printf("Error : file tidak ada");   
-      exit(1);             
-   }
 
     while(fgets(line, MAX_LEN, myfile)) {
         token = strtok(line, "\n");
@@ -75,8 +66,7 @@ void fileToArr(int size, char filename[], int arr[size][size]){
             arr[i][j] = (text[i+1][(2*j)])-48;
         }
     }
-
-    // Menutup file
+    
     fclose(myfile);
 }
 
@@ -108,7 +98,7 @@ void permutasi(int size, int a[size], int l, int r, int arr[size][size], int *co
         {
             swap((a+l), (a+i));
             permutasi(size, a, l+1, r, arr, count, outFile);
-            swap((a+l), (a+i)); //backtrack
+            swap((a+l), (a+i));
         }
     }
 }
@@ -121,33 +111,30 @@ void hPath(int size, int arr[size][size], char filename[]){
     }
     
     char outFile[MAX_LEN]="jalur-";
-
     strcat(outFile, filename);
     FILE* myfile = fopen(outFile, "w"); fclose(myfile);
 
     permutasi(size, node, 0, size-1, arr, &count, outFile);
     printf("Banyak Hamilton Path: %d\nHamilton path:\n", count);
-    if(count==0){printf("Tidak Ada Hamilton Path");}
-    else{printFile(outFile);};
+    if (count==0) {
+        printf("Tidak Ada Hamilton Path");
+    } else {
+        printFile(outFile);
+    }
 }
 
-int main(){
+int main() {
     int size;
     char filename[MAX_LEN];
 
     printf("Masukkan nama file: ");
     scanf("%s", &filename);
 
+    isFileValid(filename);
+
     size = fileToSize(filename);
     int arr[size][size];
     fileToArr(size, filename, &arr);
-
-    /*for(int i = 0; i<size; i++){
-        for(int j = 0; j<size; j++){
-            printf("%d", arr[i][j]);
-        }
-        printf("\n");
-    }*/
 
     hPath(size, arr, filename);
 
