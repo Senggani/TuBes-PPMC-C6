@@ -135,7 +135,7 @@ int main() {
 
     size = fileToSize(filename);
     int arr[size][size];
-    fileToArr(size, filename, &arr);
+    fileToArr(size, filename, arr);
 
     hPath(size, arr, filename);
 
