@@ -76,29 +76,29 @@ void swap(int *x, int *y){
     *y = temp;
 }
 
-void permutasi(int size, int a[size], int l, int r, int arr[size][size], int *count, char outFile[]){
+void DFD(int size, int path[size], int l, int r, int arr[size][size], int *count, char outFile[]){
     int i, j, valid;
 
     if (l == r){
         valid = 1;
         for(j=0;j<size-1&&valid==1;j++){
-            valid = arr[a[j]][a[j+1]];
+            valid = arr[path[j]][path[j+1]];
         }
         if(valid==1){
             FILE* myfile = fopen(outFile, "a");
             for(j=0;j<size-1;j++){
-                fprintf(myfile, "%d-", a[j]);
+                fprintf(myfile, "%d-", path[j]);
             }
-            fprintf(myfile, "%d\n", a[size-1]);
+            fprintf(myfile, "%d\n", path[size-1]);
             *count=*count + 1;
             fclose(myfile);
         }
     } else {
         for (i = l; i <= r; i++)
         {
-            swap((a+l), (a+i));
-            permutasi(size, a, l+1, r, arr, count, outFile);
-            swap((a+l), (a+i));
+            swap((path+l), (path+i));
+            DFD(size, path, l+1, r, arr, count, outFile);
+            swap((path+l), (path+i));
         }
     }
 }
@@ -114,13 +114,14 @@ void hPath(int size, int arr[size][size], char filename[]){
     strcat(outFile, filename);
     FILE* myfile = fopen(outFile, "w"); fclose(myfile);
 
-    permutasi(size, node, 0, size-1, arr, &count, outFile);
-    printf("Banyak Hamilton Path: %d\nHamilton path:\n", count);
+    DFD(size, node, 0, size-1, arr, &count, outFile);
+    printf("Banyak Hamilton Path: %d\nHamilton Path:\n", count);
     if (count==0) {
-        printf("Tidak Ada Hamilton Path");
-    } else {
-        printFile(outFile);
+        FILE* myfile = fopen(outFile, "a");
+        fprintf(myfile, "Tidak Ada Hamilton Path");
+        fclose(myfile);
     }
+    printFile(outFile);
 }
 
 int main() {
